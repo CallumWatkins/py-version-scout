@@ -1,4 +1,5 @@
 # Python Version Scout
+
 A utility for auditing Python dependency versions at a glance.
 
 ## Setup
