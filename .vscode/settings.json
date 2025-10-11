@@ -10,4 +10,8 @@
       "severity": "off"
     }
   ],
+  "[json][jsonc][json5]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  }
 }
