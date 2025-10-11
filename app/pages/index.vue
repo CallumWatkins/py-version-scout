@@ -1,8 +1,19 @@
+<script setup lang="ts">
+import type { PyPIResponse } from "@@/types/pypi";
+
+const dependencies = ref<PyPIResponse[]>([
+]);
+</script>
+
 <template>
-  <div>
-    <UPageHero
+  <UContainer class="space-y-4">
+    <UPageHeader
       title="Python Version Scout"
       description="A utility for auditing Python dependency versions at a glance."
     />
-  </div>
+    <InputSection />
+    <OutputSection
+      :dependencies="dependencies"
+    />
+  </UContainer>
 </template>
