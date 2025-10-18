@@ -1,12 +1,40 @@
+<script setup lang="ts">
+import * as z from "zod";
+import type { FormSubmitEvent } from "@nuxt/ui";
+
+const analysis = useAnalysisStore();
+
+const schema = z.object({
+  requirementsText: z.string().min(1),
+});
+
+type Schema = z.infer<typeof schema>;
+
+const formState = reactive({
+  requirementsText: "",
+});
+
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+  await analysis.analyse(event.data.requirementsText);
+};
+</script>
+
 <template>
-  <UPageCard variant="soft">
-    <UForm class="space-y-4">
+  <UCard variant="soft">
+    <UForm
+      class="space-y-4"
+      :schema="schema"
+      :state="formState"
+      @submit="onSubmit"
+    >
       <UFormField
+        name="requirementsText"
         label="Requirements"
         description="Enter your Python requirements.txt file content."
         required
       >
         <UTextarea
+          v-model="formState.requirementsText"
           :rows="10"
           class="w-full"
         />
@@ -18,5 +46,5 @@
         Analyse
       </UButton>
     </UForm>
-  </UPageCard>
+  </UCard>
 </template>

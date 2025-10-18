@@ -1,28 +1,35 @@
 <script setup lang="ts">
 import type { TableColumn } from "@nuxt/ui";
-import type { PyPIResponse } from "@@/types/pypi";
+import type { OutputProject } from "~~/types/output";
 
-interface OutputSectionProps {
-  dependencies: PyPIResponse[];
-}
 
-const props = defineProps<OutputSectionProps>();
+const analysis = useAnalysisStore();
 
-const columns: TableColumn<PyPIResponse>[] = [
+const columns: TableColumn<OutputProject>[] = [
   {
-    accessorKey: "info.name",
+    accessorKey: "name",
     header: "Name",
   },
 ];
 </script>
 
 <template>
-  <UPageCard variant="soft">
-    <template #body>
-      <UTable
-        :data="dependencies"
-        :columns="columns"
-      />
-    </template>
-  </UPageCard>
+  <UCard
+    v-if="analysis.state !== null"
+    variant="soft"
+  >
+    <UProgress v-if="analysis.state?.type === 'loading'" />
+    <UTable
+      v-else-if="analysis.state?.type === 'success'"
+      :data="analysis.state.projects"
+      :columns="columns"
+    />
+    <UAlert
+      v-else-if="analysis.state?.type === 'error'"
+      :title="analysis.state.error"
+      color="error"
+      variant="subtle"
+      icon="i-lucide-alert-circle"
+    />
+  </UCard>
 </template>
