@@ -1,25 +1,43 @@
-import type { OutputProject } from "~~/types/output";
+import { parsePipRequirementsFile, type ProjectNameRequirementWithLocation } from "pip-requirements-js";
+import type { OutputProject, ProjectsResult } from "~~/types/output";
 
-async function processRequirement(name: string): Promise<OutputProject> {
-  const response = await fetch(`https://pypi.org/pypi/${name}/json`);
+type Requirement = {
+  name: string;
+  isExact: boolean;
+};
+
+async function processRequirement(requirement: Requirement): Promise<OutputProject> {
+  const response = await fetch(`https://pypi.org/pypi/${requirement.name}/json`);
   const data = await response.json();
   return {
     name: data.info.name,
   };
 }
 
-export async function processRequirements(requirementsText: string): Promise<OutputProject[]> {
-  const names = requirementsText
-    .split(/\r?\n/)
-    .map(line => line.trim())
-    .filter(Boolean)
-    .map(line => line.split("==")[0]!.trim());
+export async function processRequirements(requirementsText: string): Promise<ProjectsResult> {
+  const parsedRequirements = parsePipRequirementsFile(requirementsText, { includeLocations: true });
+  const skippedLines: ProjectsResult["skippedLines"] = [];
+  const requirements = parsedRequirements
+    .filter((req): req is ProjectNameRequirementWithLocation => {
+      if (req.data.type === "ProjectName") return true;
+      const lineContent = requirementsText.substring(req.location.startIdx, req.location.endIdx);
+      const lineNumber = requirementsText.substring(0, req.location.startIdx).split("\n").length;
+      skippedLines.push({ line: lineNumber, content: lineContent });
+      return false;
+    })
+    .map(req => ({
+      name: req.data.name.data,
+      isExact: req.data.versionSpec != null && req.data.versionSpec.some(s => s.data.operator.data === "=="),
+    }));
 
   const projects: OutputProject[] = await Promise.all(
-    names.map(async (name) => {
-      return await processRequirement(name);
+    requirements.map(async (requirement) => {
+      return await processRequirement(requirement);
     }),
   );
 
-  return projects;
+  return {
+    projects,
+    skippedLines,
+  };
 }

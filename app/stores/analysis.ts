@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
-import type { OutputProject } from "~~/types/output";
+import type { ProjectsResult } from "~~/types/output";
 
 type AnalyseState
   = | { type: "loading" }
-    | { type: "success"; projects: OutputProject[] }
+    | { type: "success"; result: ProjectsResult }
     | { type: "error"; error: string }
     | null;
 
@@ -13,11 +13,10 @@ export const useAnalysisStore = defineStore("analysis", {
   }),
   actions: {
     async analyse(requirementsText: string) {
-      console.log(requirementsText);
       this.state = { type: "loading" };
       try {
-        const projects = await processRequirements(requirementsText);
-        this.state = { type: "success", projects: projects };
+        const result = await processRequirements(requirementsText);
+        this.state = { type: "success", result };
       }
       catch (e: unknown) {
         this.state = { type: "error", error: `${e}` };

@@ -8,7 +8,7 @@ const analysis = useAnalysisStore();
 const columns: TableColumn<OutputProject>[] = [
   {
     accessorKey: "name",
-    header: "Name",
+    header: "Project",
   },
 ];
 </script>
@@ -18,10 +18,17 @@ const columns: TableColumn<OutputProject>[] = [
     v-if="analysis.state !== null"
     variant="soft"
   >
+    <UAlert
+      v-if="analysis.state?.type === 'success' && analysis.state.result.skippedLines.length > 0"
+      :title="`Skipped ${analysis.state.result.skippedLines.length} line${analysis.state.result.skippedLines.length === 1 ? '' : 's'}`"
+      color="warning"
+      variant="subtle"
+      icon="i-lucide-info"
+    />
     <UProgress v-if="analysis.state?.type === 'loading'" />
     <UTable
       v-else-if="analysis.state?.type === 'success'"
-      :data="analysis.state.projects"
+      :data="analysis.state.result.projects"
       :columns="columns"
     />
     <UAlert
