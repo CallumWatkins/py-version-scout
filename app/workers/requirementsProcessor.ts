@@ -29,19 +29,40 @@ async function processRequirement(requirement: Requirement): Promise<OutputProje
     return {
       type: "found",
       name: data.info.name,
+      latestVersion: data.info.version,
       status: "unpinned",
     };
   }
-  if (data.releases[requirement.exactVersion] == null) {
+  const exactRelease = data.releases[requirement.exactVersion];
+  if (exactRelease == null) {
     return {
       type: "found",
       name: data.info.name,
+      latestVersion: data.info.version,
       status: "release-not-found",
+    };
+  }
+  if (exactRelease[0].yanked) {
+    return {
+      type: "found",
+      name: data.info.name,
+      latestVersion: data.info.version,
+      status: "yanked",
+      yankedReason: exactRelease[0].yanked_reason ?? null,
+    };
+  }
+  if (requirement.exactVersion !== data.info.version) {
+    return {
+      type: "found",
+      name: data.info.name,
+      latestVersion: data.info.version,
+      status: "outdated",
     };
   }
   return {
     type: "found",
     name: data.info.name,
+    latestVersion: data.info.version,
     status: "up-to-date",
   };
 }

@@ -101,14 +101,18 @@ const columns: TableColumn<OutputProject>[] = [
         >
           Unpinned
         </UBadge>
-        <UBadge
+        <UTooltip
           v-else-if="row.original.status === 'yanked'"
-          class="capitalize"
-          variant="subtle"
-          color="error"
+          :text="row.original.yankedReason ?? undefined"
         >
-          Yanked
-        </UBadge>
+          <UBadge
+            class="capitalize"
+            variant="subtle"
+            color="error"
+          >
+            Yanked
+          </UBadge>
+        </UTooltip>
         <UBadge
           v-else-if="row.original.status === 'release-not-found'"
           class="capitalize"

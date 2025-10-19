@@ -2,10 +2,33 @@ export interface OutputProjectBase {
   name: string;
 };
 
-export interface OutputProjectFound extends OutputProjectBase {
+export interface OutputProjectFoundBase extends OutputProjectBase {
   type: "found";
-  status: "up-to-date" | "outdated" | "unpinned" | "yanked" | "release-not-found";
+  latestVersion: string;
 };
+
+export interface OutputProjectUpToDate extends OutputProjectFoundBase {
+  status: "up-to-date";
+};
+
+export interface OutputProjectOutdated extends OutputProjectFoundBase {
+  status: "outdated";
+};
+
+export interface OutputProjectUnpinned extends OutputProjectFoundBase {
+  status: "unpinned";
+};
+
+export interface OutputProjectYanked extends OutputProjectFoundBase {
+  status: "yanked";
+  yankedReason: Nullable<string>;
+};
+
+export interface OutputProjectReleaseNotFound extends OutputProjectFoundBase {
+  status: "release-not-found";
+};
+
+export type OutputProjectFound = OutputProjectUpToDate | OutputProjectOutdated | OutputProjectUnpinned | OutputProjectYanked | OutputProjectReleaseNotFound;
 
 export interface OutputProjectNotFound extends OutputProjectBase {
   type: "not-found";
