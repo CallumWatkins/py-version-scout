@@ -3,7 +3,7 @@ import type { OutputProject, ProjectsResult } from "~~/types/output";
 
 type Requirement = {
   name: string;
-  isExact: boolean;
+  exactVersion?: string;
 };
 
 function normalizeProjectName(name: string): string {
@@ -15,9 +15,34 @@ function normalizeProjectName(name: string): string {
 
 async function processRequirement(requirement: Requirement): Promise<OutputProject> {
   const response = await fetch(`https://pypi.org/pypi/${requirement.name}/json`);
+  if (!response.ok) {
+    if (response.status === 404) {
+      return {
+        type: "not-found",
+        name: requirement.name,
+      };
+    }
+    throw new Error(`Failed to fetch project ${requirement.name}: ${response.statusText}`);
+  }
   const data = await response.json();
+  if (requirement.exactVersion == null) {
+    return {
+      type: "found",
+      name: data.info.name,
+      status: "unpinned",
+    };
+  }
+  if (data.releases[requirement.exactVersion] == null) {
+    return {
+      type: "found",
+      name: data.info.name,
+      status: "release-not-found",
+    };
+  }
   return {
+    type: "found",
     name: data.info.name,
+    status: "up-to-date",
   };
 }
 
@@ -33,8 +58,8 @@ export async function processRequirements(requirementsText: string): Promise<Pro
       return false;
     })
     .map(req => ({
-      isExact: req.data.versionSpec != null && req.data.versionSpec.some(s => s.data.operator.data === "=="),
       name: normalizeProjectName(req.data.name.data),
+      exactVersion: req.data.versionSpec?.find(s => s.data.operator.data === "==")?.data.version.data,
     }));
 
   const projects: OutputProject[] = await Promise.all(

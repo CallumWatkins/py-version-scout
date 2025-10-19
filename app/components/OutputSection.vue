@@ -2,13 +2,16 @@
 import type { TableColumn } from "@nuxt/ui";
 import type { OutputProject } from "~~/types/output";
 
-
 const analysis = useAnalysisStore();
 
 const columns: TableColumn<OutputProject>[] = [
   {
     accessorKey: "name",
     header: "Project",
+  },
+  {
+    id: "status",
+    header: "Status",
   },
 ];
 </script>
@@ -63,7 +66,59 @@ const columns: TableColumn<OutputProject>[] = [
       v-else-if="analysis.state?.type === 'success'"
       :data="analysis.state.result.projects"
       :columns="columns"
-    />
+      :ui="{ base: 'min-w-auto' }"
+    >
+      <template #status-cell="{ row }">
+        <UBadge
+          v-if="row.original.type === 'not-found'"
+          class="capitalize"
+          variant="subtle"
+          color="error"
+        >
+          Not found
+        </UBadge>
+        <UBadge
+          v-else-if="row.original.status === 'up-to-date'"
+          class="capitalize"
+          variant="subtle"
+          color="success"
+        >
+          Up to date
+        </UBadge>
+        <UBadge
+          v-else-if="row.original.status === 'outdated'"
+          class="capitalize"
+          variant="subtle"
+          color="warning"
+        >
+          Outdated
+        </UBadge>
+        <UBadge
+          v-else-if="row.original.status === 'unpinned'"
+          class="capitalize"
+          variant="subtle"
+          color="error"
+        >
+          Unpinned
+        </UBadge>
+        <UBadge
+          v-else-if="row.original.status === 'yanked'"
+          class="capitalize"
+          variant="subtle"
+          color="error"
+        >
+          Yanked
+        </UBadge>
+        <UBadge
+          v-else-if="row.original.status === 'release-not-found'"
+          class="capitalize"
+          variant="subtle"
+          color="error"
+        >
+          Release not found
+        </UBadge>
+      </template>
+    </UTable>
     <UAlert
       v-else-if="analysis.state?.type === 'error'"
       :title="analysis.state.error"
