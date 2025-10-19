@@ -31,10 +31,12 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         name="requirementsText"
         label="Requirements"
         description="Enter your Python requirements.txt file content."
+        :ui="{ error: 'hidden' }"
         required
       >
         <UTextarea
           v-model="formState.requirementsText"
+          variant="soft"
           :rows="10"
           class="w-full"
         />
@@ -42,6 +44,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       <UButton
         type="submit"
         size="xl"
+        :disabled="analysis.state?.type === 'loading'"
       >
         Analyse
       </UButton>
