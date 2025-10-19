@@ -1,4 +1,4 @@
-type Nullable<T> = T | null;
+import type { Nullable } from "./common";
 
 export interface PyPIResponse {
   info: PackageInfo;

@@ -1,3 +1,5 @@
+import type { Nullable } from "./common";
+
 export interface OutputProjectBase {
   name: string;
 };
@@ -5,6 +7,8 @@ export interface OutputProjectBase {
 export interface OutputProjectFoundBase extends OutputProjectBase {
   type: "found";
   latestVersion: string;
+  summary: Nullable<string>;
+  projectUrl: string;
 };
 
 export interface OutputProjectUpToDate extends OutputProjectFoundBase {

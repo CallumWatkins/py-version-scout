@@ -30,6 +30,8 @@ async function processRequirement(requirement: Requirement): Promise<OutputProje
       type: "found",
       name: data.info.name,
       latestVersion: data.info.version,
+      summary: data.info.summary,
+      projectUrl: data.info.project_url,
       status: "unpinned",
     };
   }
@@ -39,6 +41,8 @@ async function processRequirement(requirement: Requirement): Promise<OutputProje
       type: "found",
       name: data.info.name,
       latestVersion: data.info.version,
+      summary: data.info.summary,
+      projectUrl: data.info.project_url,
       status: "release-not-found",
     };
   }
@@ -47,6 +51,8 @@ async function processRequirement(requirement: Requirement): Promise<OutputProje
       type: "found",
       name: data.info.name,
       latestVersion: data.info.version,
+      summary: data.info.summary,
+      projectUrl: data.info.project_url,
       status: "yanked",
       yankedReason: exactRelease[0].yanked_reason ?? null,
     };
@@ -56,6 +62,8 @@ async function processRequirement(requirement: Requirement): Promise<OutputProje
       type: "found",
       name: data.info.name,
       latestVersion: data.info.version,
+      summary: data.info.summary,
+      projectUrl: data.info.project_url,
       status: "outdated",
     };
   }
@@ -63,6 +71,8 @@ async function processRequirement(requirement: Requirement): Promise<OutputProje
     type: "found",
     name: data.info.name,
     latestVersion: data.info.version,
+    summary: data.info.summary,
+    projectUrl: data.info.project_url,
     status: "up-to-date",
   };
 }

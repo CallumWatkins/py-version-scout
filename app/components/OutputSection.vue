@@ -68,6 +68,18 @@ const columns: TableColumn<OutputProject>[] = [
       :columns="columns"
       :ui="{ base: 'min-w-auto' }"
     >
+      <template #name-cell="{ row }">
+        <UTooltip
+          v-if="row.original.type === 'found'"
+          :text="row.original.summary ?? undefined"
+        >
+          <ULink
+            :to="row.original.projectUrl"
+            target="_blank"
+          >{{ row.original.name }}</ULink>
+        </UTooltip>
+        <span v-else>{{ row.original.name }}</span>
+      </template>
       <template #status-cell="{ row }">
         <UBadge
           v-if="row.original.type === 'not-found'"
