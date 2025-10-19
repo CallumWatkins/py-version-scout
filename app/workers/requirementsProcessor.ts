@@ -6,6 +6,13 @@ type Requirement = {
   isExact: boolean;
 };
 
+function normalizeProjectName(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[-_.]+/g, "-");
+}
+
 async function processRequirement(requirement: Requirement): Promise<OutputProject> {
   const response = await fetch(`https://pypi.org/pypi/${requirement.name}/json`);
   const data = await response.json();
@@ -26,8 +33,8 @@ export async function processRequirements(requirementsText: string): Promise<Pro
       return false;
     })
     .map(req => ({
-      name: req.data.name.data,
       isExact: req.data.versionSpec != null && req.data.versionSpec.some(s => s.data.operator.data === "=="),
+      name: normalizeProjectName(req.data.name.data),
     }));
 
   const projects: OutputProject[] = await Promise.all(
